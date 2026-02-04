@@ -21,8 +21,11 @@
 				<span>ShopHub</span>
 			</a>
 			
-			<div class="nav-links">
+			<div class="nav-links" class:hidden={$page.url.pathname === '/auth'}>
 				<a href="/" class:active={$page.url.pathname === '/'}>
+					Home
+				</a>
+				<a href="/auth" class:active={$page.url.pathname === '/products'}>
 					Products
 				</a>
 				<a href="/cart" class="cart-link" class:active={$page.url.pathname === '/cart'}>
@@ -79,6 +82,10 @@
 		display: flex;
 		align-items: center;
 		gap: 2rem;
+	}
+
+	.nav-links.hidden {
+		display: none;
 	}
 
 	.nav-links a {
