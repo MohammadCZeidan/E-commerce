@@ -70,16 +70,13 @@ jobs:
         node-version: '18'
     
     - name: Install dependencies
-      working-directory: ./frontend
-      run: npm install
+      run: cd frontend && npm install
     
     - name: Build
-      working-directory: ./frontend
-      run: npm run build
+      run: cd frontend && npm run build
     
     - name: Run tests
-      working-directory: ./frontend
-      run: npm test || true
+      run: cd frontend && npm test || true
 
   security-check:
     runs-on: ubuntu-latest
