@@ -19,8 +19,9 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::post('/products', [ProductController::class, 'store'])->middleware('role:admin,shop_owner');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner');
-    Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware('role:admin,shop_owner');
+    Route::get('/seller/products', [ProductController::class, 'mine'])->middleware('role:admin,shop_owner,seller');
+    Route::post('/products', [ProductController::class, 'store'])->middleware('role:admin,shop_owner,seller');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner,seller');
+    Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner,seller');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware('role:admin,shop_owner,seller');
 });

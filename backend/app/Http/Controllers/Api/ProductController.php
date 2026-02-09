@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -16,6 +17,19 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['images', 'owner'])->latest()->paginate(12);
+
+        return response()->json($products);
+    }
+
+    /**
+     * Display a listing of the authenticated seller's products.
+     */
+    public function mine(Request $request)
+    {
+        $products = Product::with(['images', 'owner'])
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->paginate(12);
 
         return response()->json($products);
     }
@@ -91,6 +105,13 @@ class ProductController extends Controller
         }
 
         $data = $request->validate([
+            'product_id' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products', 'product_id')->ignore($product->id),
+            ],
             'name' => ['sometimes', 'string', 'max:255'],
             'description' => ['sometimes', 'string'],
             'price' => ['sometimes', 'numeric', 'min:0'],
