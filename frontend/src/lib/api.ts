@@ -94,6 +94,18 @@ export const productApi = {
 		return response.json();
 	},
 
+	getMine: async (token: string, page = 1): Promise<PaginatedResponse<Product>> => {
+		const response = await fetch(`${API_BASE_URL}/seller/products?page=${page}`, {
+			headers: getAuthHeaders(token)
+		});
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch your products');
+		}
+
+		return response.json();
+	},
+
 	create: async (token: string, formData: FormData): Promise<Product> => {
 		const response = await fetch(`${API_BASE_URL}/products`, {
 			method: 'POST',
