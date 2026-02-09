@@ -14,6 +14,7 @@
 	let product: Product | null = null;
 
 	// Form fields
+	let productId = '';
 	let name = '';
 	let description = '';
 	let price = '';
@@ -33,7 +34,7 @@
 		
 		if (!state.isAuthenticated) {
 			goto('/auth');
-		} else if (user?.role !== 'shop_owner' && user?.role !== 'admin') {
+		} else if (user?.role !== 'shop_owner' && user?.role !== 'seller' && user?.role !== 'admin') {
 			goto('/');
 		}
 	});
@@ -54,6 +55,7 @@
 			}
 
 			// Populate form
+			productId = product.product_id || '';
 			name = product.name;
 			description = product.description;
 			price = product.price.toString();
@@ -117,6 +119,9 @@
 
 		try {
 			const formData = new FormData();
+			if (productId.trim()) {
+				formData.append('product_id', productId.trim());
+			}
 			formData.append('name', name);
 			formData.append('description', description);
 			formData.append('price', price);
@@ -184,10 +189,16 @@
 					<h2>Basic Information</h2>
 					
 					<div class="form-group">
-						<label for="name">Product Name *</label>
-						<input
-							type="text"
-							id="name"
+					<label for="product_id">Product ID (SKU)</label>
+					<input
+						type="text"
+						id="product_id"
+						bind:value={productId}
+						placeholder="Optional SKU or internal ID"
+					/>
+				</div>
+
+				<div class="form-group">
 							bind:value={name}
 							required
 							placeholder="e.g., Wireless Headphones"

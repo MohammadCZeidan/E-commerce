@@ -7,7 +7,7 @@
 	let name = '';
 	let email = '';
 	let password = '';
-	let role: 'buyer' | 'shop_owner' = 'buyer';
+	let role: 'buyer' | 'seller' = 'buyer';
 	let error = '';
 	let loading = false;
 
@@ -19,11 +19,11 @@
 			if (mode === 'register') {
 				const response = await authApi.register({ name, email, password, role });
 				authStore.login(response.token, response.user);
-				goto(response.user.role === 'shop_owner' ? '/seller/products' : '/');
+			goto(response.user.role === 'shop_owner' || response.user.role === 'seller' ? '/seller/products' : '/');
 			} else {
 				const response = await authApi.login(email, password);
 				authStore.login(response.token, response.user);
-				goto(response.user.role === 'shop_owner' ? '/seller/products' : '/');
+			goto(response.user.role === 'shop_owner' || response.user.role === 'seller' ? '/seller/products' : '/');
 			}
 		} catch (err: any) {
 			error = err.message || 'An error occurred';
@@ -98,7 +98,7 @@
 							</div>
 						</label>
 						<label class="role-option">
-							<input type="radio" bind:group={role} value="shop_owner" />
+							<input type="radio" bind:group={role} value="seller" />
 							<div class="role-card">
 								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
 									<rect x="2" y="7" width="20" height="14" rx="2" stroke-width="2"/>

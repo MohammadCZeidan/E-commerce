@@ -11,13 +11,13 @@
 	let user: any;
 	let token: string | null = null;
 
-	authStore.subscribe(state => {
+	authorStore.subscribe(state => {
 		user = state.user;
 		token = state.token;
 		
 		if (!state.isAuthenticated) {
 			goto('/auth');
-		} else if (user?.role !== 'shop_owner' && user?.role !== 'admin') {
+		} else if (user?.role !== 'shop_owner' && user?.role !== 'seller' && user?.role !== 'admin') {
 			goto('/');
 		}
 	});
@@ -31,8 +31,8 @@
 		
 		loading = true;
 		try {
-			const response = await productApi.getAll();
-			products = response.data.filter(p => p.user_id === user?.id);
+			const response = await productApi.getMine(token);
+			products = response.data;
 		} catch (err: any) {
 			error = err.message;
 		} finally {
