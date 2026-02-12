@@ -26,12 +26,14 @@ class ProductController extends Controller
      */
     public function mine(Request $request)
     {
-        $products = Product::with(['images', 'owner'])
-            ->where('user_id', $request->user()->id)
-            ->latest()
-            ->paginate(12);
+        $user = $request->user();
 
-        return response()->json($products);
+        $query = Product::with(['images', 'owner'])->latest();
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
+
+        return response()->json($query->paginate(12));
     }
 
     /**
