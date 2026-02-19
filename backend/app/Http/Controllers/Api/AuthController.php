@@ -3,70 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function __construct(private readonly AuthService $authService)
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,shop_owner,seller,buyer'],
-        ]);
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => $data['role'],
-        ]);
-
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json([
-            'token' => $token,
-            'user' => $user,
-        ], 201);
     }
 
-    public function login(Request $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $result = $this->authService->register($request->validated());
 
-        if (!$token = auth('api')->attempt($credentials)) {
+        return response()->json($result, 201);
+    }
+
+    public function login(LoginRequest $request): JsonResponse
+    {
+        $result = $this->authService->login($request->validated());
+        if ($result === null) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        return response()->json([
-            'token' => $token,
-            'user' => auth('api')->user(),
-        ]);
+        return response()->json($result);
     }
 
-    public function me()
+    public function me(): JsonResponse
     {
-        return response()->json(auth('api')->user());
+        return response()->json($this->authService->me(auth('api')->user()));
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
-        auth('api')->logout();
+        $this->authService->logout();
 
         return response()->json(['message' => 'Logged out']);
     }
 
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return response()->json([
-            'token' => auth('api')->refresh(),
+            'token' => $this->authService->refresh(),
         ]);
     }
 }
