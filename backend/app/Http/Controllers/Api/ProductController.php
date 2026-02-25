@@ -22,7 +22,16 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json($this->productService->index());
+        try {
+            return response()->json($this->productService->index());
+        } catch (\Throwable $e) {
+            // Log and surface error for development debugging
+            \Log::error('ProductController@index error: ' . $e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
     }
 
     /**
@@ -30,7 +39,15 @@ class ProductController extends Controller
      */
     public function mine(Request $request): JsonResponse
     {
-        return response()->json($this->productService->mine($request->user()));
+        try {
+            return response()->json($this->productService->mine($request->user()));
+        } catch (\Throwable $e) {
+            \Log::error('ProductController@mine error: ' . $e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
     }
 
     /**
