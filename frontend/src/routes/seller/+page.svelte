@@ -224,3 +224,4 @@
 		color: var(--text-muted);
 		margin-bottom: 1.5rem;
 	}
+</style>
