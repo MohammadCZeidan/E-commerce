@@ -41,7 +41,7 @@ jobs:
       run: mkdir -p storage/{logs,framework/{cache,sessions,testing,views}} && chmod -R 777 storage
     
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction
+      run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-mongodb
     
     - name: Copy .env.example to .env
       run: cp .env.example .env || true
