@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SellerDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -20,6 +21,8 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/seller/products', [ProductController::class, 'mine'])->middleware('role:admin,shop_owner,seller');
+    Route::get('/seller/orders', [SellerDashboardController::class, 'orders'])->middleware('role:admin,shop_owner,seller');
+    Route::get('/seller/analytics', [SellerDashboardController::class, 'analytics'])->middleware('role:admin,shop_owner,seller');
     Route::post('/products', [ProductController::class, 'store'])->middleware('role:admin,shop_owner,seller');
     Route::put('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner,seller');
     Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware('role:admin,shop_owner,seller');
